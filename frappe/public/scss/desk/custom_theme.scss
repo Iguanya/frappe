@@ -1,0 +1,57 @@
+/* custom_theme.scss
+   INFITECH - Main CSS variable overrides and gradient background
+   Logo path: /mnt/data/android-chrome-192x192.png
+*/
+
+:root,
+[data-theme="light"] {
+  /* Brand */
+  --primary: #E9A63A;
+  --primary-light: #F5D089;
+  --primary-dark: #C9872E;
+
+  --secondary: #5ED6E4;
+  --secondary-light: #8FE7EE;
+  --secondary-dark: #38AFC1;
+
+  /* Background: gradient (subtle, keeps readability) */
+  --body-gradient: linear-gradient(135deg, #F5D089 0%, #E9F2F1 40%, #8FE7EE 100%);
+
+  /* Base surfaces */
+  --bg-color: transparent; /* we render body with gradient below */
+  --fg-color: #FFFFFF;
+  --card-bg: #ffffff;
+  --modal-bg: #ffffff;
+
+  /* Borders / text */
+  --border-color: #E5E7EB;
+  --dark-border-color: #D1D5DB;
+  --text-color: #1F2937;
+  --text-muted: #6B7280;
+  --heading-color: #111827;
+
+  /* Accents */
+  --subtle-accent: rgba(233,166,58,0.08);
+  --highlight-color: rgba(94,214,228,0.12);
+
+  /* Controls */
+  --control-bg: #F6F8F9;
+  --control-bg-on-gray: #EAEFF2;
+
+  /* Buttons */
+  --btn-primary: var(--primary);
+}
+
+/* Apply gradient as the page background and keep cards white for readability */
+body {
+  background: var(--body-gradient) fixed;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Small helper variables for later use (keeps specificity controlled) */
+:root,
+[data-theme="light"] {
+  --infitech-gradient: linear-gradient(90deg, var(--primary), var(--secondary));
+}
