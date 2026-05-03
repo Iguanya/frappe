@@ -200,31 +200,23 @@ frappe.ui.keys.add_shortcut({
 frappe.ui.keys.add_shortcut({
 	shortcut: "ctrl+k",
 	action: function (e) {
-		$("#navbar-search").focus();
+		$("#navbar-modal-search").click();
 		e.preventDefault();
 		return false;
 	},
 	description: __("Open Awesomebar"),
-});
-
-frappe.ui.keys.add_shortcut({
-	shortcut: "ctrl+k",
-	action: function (e) {
-		$("#navbar-search").focus();
-		e.preventDefault();
-		return false;
-	},
-	description: __("Open Awesomebar"),
+	ignore_inputs: true,
 });
 
 frappe.ui.keys.add_shortcut({
 	shortcut: "ctrl+g",
 	action: function (e) {
-		$("#navbar-search").focus();
+		$("#navbar-modal-search").click();
 		e.preventDefault();
 		return false;
 	},
 	description: __("Open Awesomebar"),
+	ignore_inputs: true,
 });
 
 frappe.ui.keys.add_shortcut({

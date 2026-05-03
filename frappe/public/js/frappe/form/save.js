@@ -198,40 +198,38 @@ frappe.ui.form.check_mandatory = function (frm) {
 	return !has_errors;
 
 	function is_docfield_mandatory(doc, df) {
-		if (df.reqd) return true;
-		if (!df.mandatory_depends_on || !doc) return;
+		if (df.mandatory_depends_on && doc) {
+			let out = null;
+			let expression = df.mandatory_depends_on;
+			let parent = frm.doc;
 
-		let out = null;
-		let expression = df.mandatory_depends_on;
-		let parent = frappe.get_meta(df.parent);
-
-		if (typeof expression === "boolean") {
-			out = expression;
-		} else if (typeof expression === "function") {
-			out = expression(doc);
-		} else if (expression.substr(0, 5) == "eval:") {
-			try {
-				out = frappe.utils.eval(expression.substr(5), { doc, parent });
-				if (parent && parent.istable && expression.includes("is_submittable")) {
-					out = true;
+			if (typeof expression === "boolean") {
+				out = expression;
+			} else if (typeof expression === "function") {
+				out = expression(doc);
+			} else if (expression.substr(0, 5) == "eval:") {
+				try {
+					out = frappe.utils.eval(expression.substr(5), { doc, parent });
+				} catch (e) {
+					frappe.throw(__('Invalid "mandatory_depends_on" expression'));
 				}
-			} catch (e) {
-				frappe.throw(__('Invalid "mandatory_depends_on" expression'));
-			}
-		} else {
-			var value = doc[expression];
-			if ($.isArray(value)) {
-				out = !!value.length;
 			} else {
-				out = !!value;
+				var value = doc[expression];
+				if ($.isArray(value)) {
+					out = !!value.length;
+				} else {
+					out = !!value;
+				}
 			}
+
+			return out;
 		}
 
-		return out;
+		return !!df.reqd;
 	}
 
 	function scroll_to(fieldname) {
-		if (frm.scroll_to_field(fieldname)) {
+		if (frm.scroll_to_field(fieldname, false)) {
 			frm.scroll_set = true;
 		}
 	}
@@ -244,68 +242,60 @@ frappe.ui.form.remove_old_form_route = () => {
 	);
 };
 
-frappe.ui.form.update_calling_link = (newdoc) => {
+frappe.ui.form.update_calling_link = async (newdoc) => {
 	if (!frappe._from_link) return;
-	var doc = frappe.get_doc(frappe._from_link.doctype, frappe._from_link.docname);
 
-	let is_valid_doctype = () => {
-		if (frappe._from_link.df.fieldtype === "Link") {
-			return newdoc.doctype === frappe._from_link.df.options;
-		} else {
-			// dynamic link, type is dynamic
-			return newdoc.doctype === doc[frappe._from_link.df.options];
+	const { field_obj, doc, set_route_args, scrollY } = frappe._from_link;
+	const df = field_obj.df;
+
+	if (!["Link", "Dynamic Link", "Table MultiSelect"].includes(df.fieldtype)) return;
+
+	const is_valid_doctype = () => {
+		switch (df.fieldtype) {
+			case "Link":
+				return newdoc.doctype === df.options;
+			case "Dynamic Link":
+				return newdoc.doctype === doc[df.options];
+			case "Table MultiSelect":
+				return newdoc.doctype === field_obj.get_options();
 		}
 	};
 
-	if (is_valid_doctype()) {
-		frappe.model.with_doctype(newdoc.doctype, () => {
-			let meta = frappe.get_meta(newdoc.doctype);
-			// set value
-			if (doc && doc.parentfield) {
-				//update values for child table
-				$.each(
-					frappe._from_link.frm.fields_dict[doc.parentfield].grid.grid_rows,
-					function (index, field) {
-						if (field.doc && field.doc.name === frappe._from_link.docname) {
-							if (meta.title_field && meta.show_title_field_in_link) {
-								frappe.utils.add_link_title(
-									newdoc.doctype,
-									newdoc.name,
-									newdoc[meta.title_field]
-								);
-							}
-							frappe._from_link.set_value(newdoc.name);
-						}
-					}
-				);
-			} else {
-				if (meta.title_field && meta.show_title_field_in_link) {
-					frappe.utils.add_link_title(
-						newdoc.doctype,
-						newdoc.name,
-						newdoc[meta.title_field]
-					);
-				}
-				frappe._from_link.set_value(newdoc.name);
-			}
+	if (!is_valid_doctype()) return;
 
-			// refresh field
-			frappe._from_link.refresh();
+	// switch back to the original doc first,
+	// this is necessary in case from_link.doctype === newdoc.doctype
+	if (field_obj.frm) {
+		await frappe.set_route(...set_route_args);
+		frappe.utils.scroll_to(scrollY);
+	}
 
-			// if from form, switch
-			if (frappe._from_link.frm) {
-				frappe
-					.set_route(
-						"Form",
-						frappe._from_link.frm.doctype,
-						frappe._from_link.frm.docname
-					)
-					.then(() => {
-						frappe.utils.scroll_to(frappe._from_link_scrollY);
-					});
-			}
+	delete frappe._from_link;
 
-			frappe._from_link = null;
-		});
+	await frappe.model.with_doctype(newdoc.doctype);
+	const meta = frappe.get_meta(newdoc.doctype);
+
+	// update link title cache
+	if (meta.title_field && meta.show_title_field_in_link) {
+		frappe.utils.add_link_title(newdoc.doctype, newdoc.name, newdoc[meta.title_field]);
+	}
+
+	// parsing is needed for table multiselect to convert string to array
+	await field_obj.parse_validate_and_set_in_model(newdoc.name);
+
+	field_obj.refresh();
+
+	// only quick entry form should proceed from here on
+	if (field_obj.frm || !(field_obj.layout instanceof frappe.ui.form.QuickEntryForm)) return;
+
+	const quick_entry = field_obj.layout;
+
+	// quick entry form is still open (nested case), no need to redirect
+	if (quick_entry.wrapper[0].offsetParent !== null) return;
+
+	// redirect to the original doc's form
+	const { doc: original_doc } = quick_entry;
+	if (original_doc && original_doc.doctype && original_doc.name) {
+		frappe.set_route("Form", original_doc.doctype, original_doc.name);
 	}
 };

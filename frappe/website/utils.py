@@ -20,6 +20,8 @@ from frappe.utils import (
 	get_system_timezone,
 	md_to_html,
 )
+from frappe.utils.data import get_url_to_workspace
+from frappe.utils.user import is_portal_user
 
 FRONTMATTER_PATTERN = re.compile(r"^\s*(?:---|\+\+\+)(.*?)(?:---|\+\+\+)\s*(.+)$", re.S | re.M)
 H1_TAG_PATTERN = re.compile("<h1>([^<]*)")
@@ -99,7 +101,6 @@ def get_home_page():
 
 	def _get_home_page():
 		home_page = None
-
 		# for user
 		if frappe.session.user != "Guest":
 			# by role
@@ -124,7 +125,15 @@ def get_home_page():
 			home_page = "login" if frappe.session.user == "Guest" else "me"
 
 		home_page = home_page.strip("/")
+		if home_page == "me" and frappe.session.data.user_type == "System User":
+			home_page = "desk"
+		if home_page == "me" and is_portal_user():
+			home_page = "portal"
 
+		default_workspace = frappe.get_user().load_user().default_workspace
+		if default_workspace:
+			home_page = get_url_to_workspace(default_workspace["name"], default_workspace["public"])
+			return home_page
 		return home_page
 
 	if frappe._dev_server:
@@ -559,7 +568,7 @@ def build_response(path, data, http_status_code, headers: dict | None = None):
 
 	if headers:
 		for key, val in headers.items():
-			response.headers[key] = cstr(cstr(val).encode("ascii", errors="xmlcharrefreplace"))
+			response.headers[key] = cstr(cstr(val).encode("utf-8", errors="xmlcharrefreplace"))
 
 	return response
 
@@ -605,3 +614,9 @@ def is_binary_file(path):
 	with open(path, "rb") as f:
 		content = f.read(1024)
 		return bool(content.translate(None, textchars))
+
+
+def check_if_webform_exists(route):
+	return frappe.db.exists("Web Form", {"name": route.strip("/")}) or frappe.db.exists(
+		"Web Form", {"route": route.strip("/")}
+	)
