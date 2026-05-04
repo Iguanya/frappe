@@ -1,81 +1,79 @@
 // ==============================
 // INFITECH BRAND THEME - variables.scss
-// Path to logo (for reference): /mnt/data/android-chrome-192x192.png
 // ==============================
 
-/*
-  Important notes:
-  - Bootstrap SCSS functions/variables/mixins MUST be imported before you override Bootstrap variables.
-  - Do NOT use `!important` inside variable declarations. Use it only in CSS rules if absolutely needed.
-  - Keep `css_variables` and `dark` imports near the end so Frappe's runtime CSS variables can be applied last.
-*/
-
-// ------------------------------
-// Bootstrap base imports (first)
-// ------------------------------
+// 1. Bootstrap functions first
 @import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
 
-// ------------------------------
-// Espresso / Frappe base imports
-// ------------------------------
+// 2. Frappe / Espresso foundations
 @import "../espresso/colors";
 @import "../espresso/spacing";
 @import "../espresso/typography";
 @import "../espresso/shadows";
 @import "../espresso/borders";
 
-html,
-body {
-  // Use 100% of default (rem-based). Avoid forcing px unless intentional.
-  font-size: 100%;
-}
-
-// --------------------------------------
-// BRAND COLORS (Infitech)
-// --------------------------------------
+// 3. Brand colors
 $infitech-orange: #E9A63A;
-$infitech-blue:   #5ED6E4;
+$infitech-blue: #5ED6E4;
 
-// Semantic colors (define danger so theme-colors map is complete)
+$primary: $infitech-orange;
+$secondary: $infitech-blue;
 $danger: #dc3545;
 
-// Override primary Bootstrap/Frappe variables (no !important)
-$primary:    $infitech-orange;
-$secondary:  $infitech-blue;
+// 4. Core Bootstrap/Frappe variables BEFORE bootstrap variables import
+$body-bg: #F9FAFB;
+$body-color: #1F2937;
+$border-color: #E5E7EB;
+
 $link-color: $infitech-blue;
 $link-hover-color: darken($infitech-blue, 12%);
 
-// --------------------------------------
-// Neutral system colors (no !important in variables)
-// --------------------------------------
-$border-color: #E5E7EB;
-$body-bg:      #F9FAFB;
-$body-color:   #1F2937; // Slate gray text
-$navbar-bg:    #FFFFFF;
-$sidebar-bg:   #FFFFFF;
-$sidebar-hover-bg: rgba(0, 0, 0, 0.04);
-
-// Active states
 $component-active-color: #ffffff;
 $component-active-bg: $infitech-orange;
 
-// Backgrounds & surfaces
-$modal-content-bg:   #ffffff;
-$modal-backdrop-bg:  rgba(0, 0, 0, 0.5);
+$modal-content-bg: #ffffff;
+$modal-backdrop-bg: rgba(0, 0, 0, 0.5);
 
-// Keep code color from original where relevant
-$code-color: var(--purple-600);
+$input-bg: #ffffff;
+$input-color: #1F2937;
+$input-placeholder-color: #9CA3AF;
+$input-disabled-bg: #F3F4F6;
+$input-focus-border-color: lighten($infitech-blue, 10%);
+$input-box-shadow: none;
 
-// --------------------------------------
-// Shapes & Layout
-// --------------------------------------
-$border-radius:    var(--border-radius);
-$border-radius-sm: var(--border-radius-sm);
-$border-radius-lg: var(--border-radius-lg);
+$dropdown-bg: #ffffff;
+$dropdown-color: #1F2937;
+$dropdown-border-color: #E5E7EB;
+$dropdown-link-color: #1F2937;
+$dropdown-link-hover-color: #111827;
+$dropdown-link-hover-bg: #F3F4F6;
+$dropdown-divider-bg: #E5E7EB;
+$dropdown-min-width: 200px;
 
-$nav-divider-margin-y: 4px;
+$popover-bg: #ffffff;
+$popover-border-color: #E5E7EB;
+$popover-header-bg: #ffffff;
+$popover-box-shadow: var(--shadow-2xl);
+
+$card-bg: #ffffff;
+$card-border-color: #E5E7EB;
+$card-border-radius: 0.75rem;
+
+$btn-border-radius: 0.375rem;
+$btn-padding-x: 1rem;
+$btn-padding-y: 0.5rem;
+$btn-font-weight: 400;
+$btn-transition: none;
+
+$navbar-height: 48px;
+$navbar-padding-y: 1rem;
+$navbar-nav-link-padding-x: 1rem;
+
+$border-radius: 0.5rem;
+$border-radius-sm: 0.375rem;
+$border-radius-lg: 0.75rem;
+
+$spacer: 14px;
 
 $container-max-widths: (
   sm: 540px,
@@ -84,124 +82,6 @@ $container-max-widths: (
   xl: 1290px,
 );
 
-// --------------------------------------
-// THEME COLORS MAP
-// --------------------------------------
-$theme-colors: (
-  "primary":   $primary,
-  "secondary": $secondary,
-  "danger":    $danger,
-);
-
-// --------------------------------------
-// NAVBAR / HEADER
-// --------------------------------------
-$navbar-height: 48px;
-
-// --------------------------------------
-// INPUTS
-// --------------------------------------
-$input-bg:                 #ffffff;
-$input-placeholder-color:  var(--gray-500);
-$input-disabled-bg:        var(--input-disabled-bg);
-$input-color:              #1F2937;
-$input-box-shadow:         none;
-$input-focus-border-color: lighten($infitech-blue, 10%);
-$input-border-radius:      var(--border-radius);
-$input-btn-focus-width:    2px;
-
-// --------------------------------------
-// DROPDOWNS
-// --------------------------------------
-$dropdown-color:             #1F2937;
-$dropdown-bg:                #ffffff;
-$dropdown-border-color:      $border-color;
-$dropdown-link-color:        #1F2937;
-$dropdown-link-hover-color:  #1F2937;
-$dropdown-link-hover-bg:     rgba(0, 0, 0, 0.04);
-$dropdown-link-disabled-color: var(--gray-600);
-$dropdown-header-color:        var(--gray-600);
-$dropdown-divider-bg:          $border-color;
-$dropdown-min-width:           200px;
-
-// --------------------------------------
-// BUTTONS
-// --------------------------------------
-$btn-padding-y-lg: 1rem;
-$btn-padding-x-lg: 2.5rem;
-$btn-font-size-lg: 1.125rem;
-$btn-line-height-lg: 1;
-$btn-border-radius-lg: 0.5rem;
-$btn-border-radius: 0.375rem;
-$btn-padding-x: 1rem;
-$btn-padding-y: 0.5rem;
-$btn-font-weight: 400;
-
-// Button active states to match brand
-$btn-active-box-shadow: var(--shadow-inset);
-
-// Bootstrap button variables
-$btn-primary-bg:                 $infitech-orange;
-$btn-primary-border-color:       $infitech-orange;
-$btn-primary-color:              #fff;
-$btn-primary-hover-bg:           darken($infitech-orange, 6%);
-$btn-primary-hover-border-color: darken($infitech-orange, 8%);
-
-// --------------------------------------
-// MARK HIGHLIGHT
-// --------------------------------------
-$mark-bg: #fdf9af;
-$mark-padding: 0;
-
-// Transitions
-$btn-transition: none;
-$input-transition: none;
-
-// --------------------------------------
-// POPOVERS
-// --------------------------------------
-$enable-shadows: true;
-$popover-border-radius: 12px;
-$popover-bg: #ffffff;
-$popover-box-shadow: var(--shadow-2xl);
-$popover-body-padding-x: var(--padding-md);
-$popover-body-padding-y: var(--padding-md);
-$popover-border-color: transparent;
-$popover-arrow-outer-color: var(--dark-border-color);
-$popover-header-bg: white;
-
-// --------------------------------------
-// TOGGLE SWITCHES
-// --------------------------------------
-$custom-switch-width: 1.625rem;
-$custom-switch-indicator-border-radius: 1rem;
-$custom-control-indicator-border-color: #374151;
-$custom-control-label-color: #1F2937;
-$custom-switch-indicator-size: 8px;
-$custom-control-indicator-border-width: 2px;
-
-// --------------------------------------
-// PROGRESS BAR
-// --------------------------------------
-$progress-bar-bg: $infitech-blue;
-
-// --------------------------------------
-// CARD / SPACING
-// --------------------------------------
-$navbar-nav-link-padding-x: 1rem;
-$navbar-padding-y: 1rem;
-$card-border-radius: 0.75rem;
-$card-spacer-y: 0.5rem;
-
-$link-hover-color: darken($infitech-blue, 12%);
-
-// Dropdown defaults
-$dropdown-border-radius: 0.375rem;
-$dropdown-item-padding-y: var(--padding-sm);
-$dropdown-item-padding-x: var(--padding-sm);
-
-// Grid breakpoints (overwrite intentionally - remove !default)
-$spacer: 14px;
 $grid-breakpoints: (
   xs: 0,
   sm: 576px,
@@ -211,23 +91,99 @@ $grid-breakpoints: (
   2xl: 1440px,
 );
 
-// --------------------------------------
-// OPTIONAL: small helper CSS using brand colors
-// (Use !important only in CSS rules if you need to force overrides)
-// --------------------------------------
-/* Example: make the .btn-infinite use brand gradient */
-.btn-infitech {
-  background: linear-gradient(90deg, $infitech-orange 0%, $infitech-blue 100%);
-  color: #fff;
-  border: 1px solid $infitech-orange;
-  &:hover {
-    filter: brightness(0.98);
-  }
-}
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "danger": $danger,
+);
 
-// --------------------------------------
-// Keep typography and final imports last
-// --------------------------------------
+// 5. Bootstrap variables/mixins AFTER overrides
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+// 6. Frappe final imports
 @import "typography";
 @import "css_variables";
 @import "dark";
+
+// 7. Frappe runtime CSS variable fixes
+:root,
+[data-theme="light"] {
+  --primary: #E9A63A;
+  --primary-color: #E9A63A;
+  --secondary: #5ED6E4;
+
+  --bg-color: #F9FAFB;
+  --fg-color: #ffffff;
+  --fg-hover-color: #F3F4F6;
+
+  --text-color: #1F2937;
+  --text-muted: #6B7280;
+  --heading-color: #111827;
+
+  --border-color: #E5E7EB;
+  --dark-border-color: #D1D5DB;
+
+  --card-bg: #ffffff;
+  --control-bg: #ffffff;
+  --input-disabled-bg: #F3F4F6;
+
+  --modal-bg: #ffffff;
+  --popover-bg: #ffffff;
+  --dropdown-bg: #ffffff;
+
+  --navbar-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+
+  --btn-primary: #E9A63A;
+  --btn-primary-hover: #d89425;
+
+  --progress-bar-bg: #5ED6E4;
+}
+
+// 8. Safety overrides for transparent ERPNext areas
+.layout-main-section,
+.form-layout,
+.form-page,
+.form-section,
+.section-body,
+.dashboard-section,
+.widget,
+.widget-body,
+.card,
+.list-row-container,
+.report-wrapper,
+.datatable,
+.modal-content,
+.popover,
+.dropdown-menu {
+  background-color: var(--fg-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dropdown-menu {
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--fg-hover-color);
+  color: var(--text-color);
+}
+
+.form-control,
+.input-with-feedback,
+.awesomplete > input {
+  background-color: var(--control-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.page-container,
+.layout-main,
+body {
+  background-color: var(--bg-color);
+}
